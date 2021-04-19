@@ -1,0 +1,42 @@
+<template>
+  <div>
+    <div class="text-center">
+      <v-icon class="mb-5" x-large color="success">mdi-help-circle</v-icon>
+      <h1 class="font-weight-light mb-5">Do you want to start charging?</h1>
+      <div class="d-flex flex-column">
+        <span class="font-weight-bold mb-2 confirm__text-muted"
+          >Pricing information*:</span
+        >
+        <span class="mb-2 confirm__text-muted">Consumed energy fee:</span>
+        <span class="mb-2 confirm__text-muted">0.25€ / kWh</span>
+        <span class="mb-2 confirm__text-muted"
+          >Charging time fee after 180 minutes:</span
+        >
+        <span class="mb-5 confirm__text-muted">0.1€ / min</span>
+        <span class="mb-5 confirm__text-muted"
+          >*Discounts are not included in price</span
+        >
+      </div>
+    </div>
+    <v-card-actions>
+      <v-layout justify-center>
+        <v-btn
+          class="mr-3"
+          x-large
+          color="success"
+          text
+          @click="$emit('on-cancel')"
+        >
+          Cancel
+        </v-btn>
+        <v-btn x-large color="success">Start charging</v-btn>
+      </v-layout>
+    </v-card-actions>
+  </div>
+</template>
+
+<style lang="scss">
+.confirm__text-muted {
+  opacity: 0.7;
+}
+</style>
