@@ -7,6 +7,7 @@ export type ItemType<T> = {
 }
 
 export interface ItemsInterface {
+    saved_locations: LocationType[];
     locations: LocationType[];
     chargers: ChargerType[];
     connectors: ConnectorType[];

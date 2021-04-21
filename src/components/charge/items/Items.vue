@@ -9,12 +9,17 @@
     />
     <v-divider></v-divider>
     <v-card-text class="step__content-container">
-      <v-radio-group v-if="workingItems && workingItems.length" column>
+      <v-radio-group
+        v-model="form[title]"
+        @change="emitForm()"
+        v-if="workingItems && workingItems.length"
+        column
+      >
         <v-radio
           color="success"
           v-for="(item, index) in workingItems"
           :label="item.name"
-          :value="item.id"
+          :value="item"
           :key="index"
         ></v-radio>
       </v-radio-group>
@@ -29,20 +34,23 @@ import Vue, { PropType } from "vue";
 import Search from "@/components/search/Search.vue";
 import { ItemsInterface, ItemsType } from "@/lib/global";
 import { StepComponentEnum } from "../dialog/interfaces";
+import { ItemsDataInterface } from "./interfaces";
 export default Vue.extend({
   name: "Items",
   components: { Search },
-  data(): {
-    title: string;
-    itemsCopy: ItemsInterface;
-    workingItems?: ItemsType;
-  } {
+  data(): ItemsDataInterface {
     return {
       title: StepComponentEnum.Location.toLowerCase(),
       itemsCopy: {
+        saved_locations: [],
         locations: [],
         connectors: [],
         chargers: [],
+      },
+      form: {
+        location: undefined,
+        charger: undefined,
+        connector: undefined,
       },
       workingItems: undefined,
     };
@@ -54,9 +62,13 @@ export default Vue.extend({
     items: {
       type: Object as PropType<ItemsInterface>,
     },
+    filter: {
+      type: Boolean,
+    },
   },
   mounted() {
     this.itemsCopy = {
+      saved_locations: [...this.items.saved_locations],
       locations: [...this.items.locations],
       chargers: [...this.items.chargers],
       connectors: [...this.items.connectors],
@@ -64,7 +76,10 @@ export default Vue.extend({
     this.switchWorkingItem();
   },
   watch: {
-    step: function (step: number) {
+    step: function () {
+      this.switchWorkingItem();
+    },
+    filter: function () {
       this.switchWorkingItem();
     },
   },
@@ -72,7 +87,9 @@ export default Vue.extend({
     switchWorkingItem() {
       switch (this.step) {
         case 1:
-          this.workingItems = this.itemsCopy.locations;
+          this.workingItems = this.filter
+            ? this.itemsCopy.saved_locations
+            : this.itemsCopy.locations;
           this.title = StepComponentEnum.Location.toLowerCase();
           break;
         case 2:
@@ -86,7 +103,14 @@ export default Vue.extend({
       }
     },
     filterWorkingItems(items: ItemsType) {
-      this.workingItems = items;
+      if (items === null) {
+        this.switchWorkingItem();
+      } else {
+        this.workingItems = items;
+      }
+    },
+    emitForm() {
+      this.$emit("selectedValues", this.form);
     },
   },
 });

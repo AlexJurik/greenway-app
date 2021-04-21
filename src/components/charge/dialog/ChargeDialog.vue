@@ -11,16 +11,26 @@
           <h2 class="mr-2 font-weight-medium font-weight-medium">
             Start charging
           </h2>
+
           <v-checkbox
+            v-if="step === 1"
+            v-model="filtered"
             label="My locations"
             color="success"
-            value="success"
             hide-details
           ></v-checkbox>
         </div>
 
+        <div v-if="step !== 4" class="charge__subtitle">
+          <span>{{ makeSubtitle() }}</span>
+        </div>
         <template v-if="step === 1 || step === 2 || step === 3">
-          <Items :items="data" :step="step" />
+          <Items
+            :items="data"
+            :step="step"
+            :filter="filtered"
+            @selectedValues="setValues($event)"
+          />
         </template>
         <template v-else>
           <Confirm @on-cancel="cancel()" />
@@ -38,7 +48,14 @@
             >
               Back
             </v-btn>
-            <v-btn x-large color="success" @click="step++"> Next </v-btn>
+            <v-btn
+              x-large
+              color="success"
+              :disabled="validateForm(step)"
+              @click="step++"
+            >
+              Next
+            </v-btn>
           </v-layout>
         </v-card-actions>
       </v-card>
@@ -54,24 +71,40 @@ import Confirm from "../confirm/Confirm.vue";
 import { LocationInterface } from "@/lib/location";
 import { ChargerInterface } from "@/lib/charger";
 import { ConnectorInterface } from "@/lib/connector";
+import { FormInterface } from "../items/interfaces";
 
 export default Vue.extend({
   name: "ChargeDialog",
   components: { Items, Confirm },
   data(): DialogDataInterface {
     return {
-      data: { locations: [], chargers: [], connectors: [] },
+      data: {
+        saved_locations: [],
+        locations: [],
+        chargers: [],
+        connectors: [],
+      },
+      form: {
+        location: undefined,
+        charger: undefined,
+        connector: undefined,
+      },
       dialog: false,
+      filtered: false,
       step: 1,
       stepComponent: StepComponentEnum.Location,
     };
   },
   mounted() {
     Promise.all([
+      this.$http.get(`/charge/saved-locations`),
       this.$http.get(`/charge/locations`),
       this.$http.get(`/charge/chargers`),
       this.$http.get(`/charge/connectors`),
-    ]).then(([locations, chargers, connectors]) => {
+    ]).then(([saved_locations, locations, chargers, connectors]) => {
+      this.data.saved_locations = [
+        ...saved_locations.data,
+      ] as LocationInterface[];
       this.data.locations = [...locations.data] as LocationInterface[];
       this.data.chargers = [...chargers.data] as ChargerInterface[];
       this.data.connectors = [...connectors.data] as ConnectorInterface[];
@@ -80,7 +113,43 @@ export default Vue.extend({
   methods: {
     cancel() {
       this.dialog = false;
-      setTimeout(() => (this.step = 1), 100);
+      this.resetStep();
+    },
+    resetStep() {
+      setTimeout(() => (this.step = 1), 300);
+    },
+    setValues(form: FormInterface) {
+      this.form = form;
+    },
+    validateForm(step: number) {
+      switch (step) {
+        case 1:
+          return !this.form.location;
+        case 2:
+          return !this.form.charger;
+        case 3:
+          return !this.form.connector;
+      }
+    },
+    makeSubtitle() {
+      const formArray = [this.form.location?.name];
+
+      if (this.form.charger) {
+        formArray.push(this.form.charger?.name);
+      }
+
+      if (this.form.connector) {
+        formArray.push(this.form.connector?.name);
+      }
+
+      return formArray.join(" - ");
+    },
+  },
+  watch: {
+    dialog: function (value: boolean) {
+      if (!value) {
+        this.resetStep();
+      }
     },
   },
 });
@@ -96,7 +165,12 @@ export default Vue.extend({
 .charge__title-container {
   display: flex;
   align-items: center;
-  margin: $gutter * 6 0 $gutter * 8;
+  margin: $gutter * 6 0 $gutter * 3;
+}
+
+.charge__subtitle {
+  opacity: 0.56;
+  margin-bottom: $gutter * 3;
 }
 
 .v-input--selection-controls {
