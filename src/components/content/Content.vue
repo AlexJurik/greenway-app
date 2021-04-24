@@ -12,8 +12,11 @@
     </v-snackbar>
     <v-row class="text-center">
       <v-col class="mb-5">
+        <div class="content__langs">
+          <v-select :items="langs" v-model="$i18n.locale"> </v-select>
+        </div>
         <h2 class="headline font-weight-bold mb-5">
-          {{ charging ? "Stop charging" : "Start charging" }}
+          {{ charging ? $t("stopCharging") : $t("startCharging") }}
         </h2>
         <template v-if="!charging">
           <Dialog />
@@ -25,7 +28,7 @@
           dark
           @click="stopCharging()"
         >
-          Stop
+          {{ $t("stop") }}
         </v-btn>
       </v-col>
     </v-row>
@@ -42,7 +45,13 @@ export default Vue.extend({
   components: { Dialog },
   name: "Content",
   data() {
-    return { showSnack: false, snackMessage: "", snackType: "", snackTimer: 0 };
+    return {
+      showSnack: false,
+      snackMessage: "",
+      snackType: "",
+      snackTimer: 0,
+      langs: ["en", "sk"],
+    };
   },
   computed: {
     charging: {
@@ -75,11 +84,11 @@ export default Vue.extend({
     charging: function (value: boolean) {
       if (value) {
         this.$store.dispatch(NotificationActions.SET_NOTIFICATION, {
-          message: "Charging was started",
+          message: this.$t("chargingStarted"),
         });
       } else {
         this.$store.dispatch(NotificationActions.SET_NOTIFICATION, {
-          message: "Charging was stopped",
+          message: this.$t("chargingStopped"),
         });
       }
     },
@@ -94,5 +103,12 @@ export default Vue.extend({
 .content__container {
   height: 100%;
   align-items: center;
+}
+
+.content__langs {
+  position: absolute;
+  width: $gutter * 10;
+  top: $gutter;
+  right: $gutter;
 }
 </style>

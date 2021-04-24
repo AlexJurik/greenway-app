@@ -2,19 +2,21 @@
   <div>
     <div class="text-center">
       <v-icon class="mb-5" x-large color="success">mdi-help-circle</v-icon>
-      <h1 class="font-weight-light mb-5">Do you want to start charging?</h1>
+      <h1 class="font-weight-light mb-5">{{ $t("doYouWantStart") }}</h1>
       <div class="d-flex flex-column">
         <span class="font-weight-bold mb-2 confirm__text-muted"
-          >Pricing information*:</span
+          >{{ $t("pricingInfo") }}*:</span
         >
-        <span class="mb-2 confirm__text-muted">Consumed energy fee:</span>
+        <span class="mb-2 confirm__text-muted"
+          >{{ $t("consumedEnergy") }}:</span
+        >
         <span class="mb-2 confirm__text-muted">0.25€ / kWh</span>
         <span class="mb-2 confirm__text-muted"
-          >Charging time fee after 180 minutes:</span
+          >{{ $t("chargingTimeFee") }}:</span
         >
         <span class="mb-5 confirm__text-muted">0.1€ / min</span>
         <span class="mb-5 confirm__text-muted"
-          >*Discounts are not included in price</span
+          >*{{ $t("discountsAreNotIncluded") }}</span
         >
       </div>
     </div>
@@ -27,9 +29,11 @@
           text
           @click="$emit('on-cancel')"
         >
-          Cancel
+          {{ $t("cancel") }}
         </v-btn>
-        <v-btn x-large color="success" @click="start()">Start charging</v-btn>
+        <v-btn x-large color="success" @click="start()">{{
+          $t("startCharging")
+        }}</v-btn>
       </v-layout>
     </v-card-actions>
   </div>

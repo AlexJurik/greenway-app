@@ -1,6 +1,6 @@
-import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
 import VueAxios from 'vue-axios'
 import Vue from 'vue';
+import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 
 const config: AxiosRequestConfig = {
     baseURL: `${process.env.VUE_APP_BASE_URL}`

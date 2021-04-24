@@ -2,20 +2,27 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" max-width="600px">
       <template #activator="{ on, attrs }">
-        <v-btn x-large color="success" dark v-bind="attrs" v-on="on">
-          Start
+        <v-btn
+          x-large
+          color="success"
+          dark
+          :disabled="disableOpenButton"
+          v-bind="attrs"
+          v-on="on"
+        >
+          {{ $t("start") }}
         </v-btn>
       </template>
       <v-card class="charge__content">
         <div v-if="step !== 4" class="charge__title-container" align-center>
           <h2 class="mr-2 font-weight-medium font-weight-medium">
-            Start charging
+            {{ $t("startCharging") }}
           </h2>
 
           <v-checkbox
             v-if="step === 1"
             v-model="filtered"
-            label="My locations"
+            :label="$t('myLocations')"
             color="success"
             hide-details
           ></v-checkbox>
@@ -46,7 +53,7 @@
               text
               @click="step--"
             >
-              Back
+              {{ $t("back") }}
             </v-btn>
             <v-btn
               x-large
@@ -54,7 +61,7 @@
               :disabled="validateForm(step)"
               @click="step++"
             >
-              Next
+              {{ $t("next") }}
             </v-btn>
           </v-layout>
         </v-card-actions>
@@ -94,11 +101,13 @@ export default Vue.extend({
       subtitle: "",
       dialog: false,
       filtered: false,
+      disableOpenButton: false,
       step: 1,
       stepComponent: StepComponentEnum.Location,
     };
   },
   mounted() {
+    this.disableOpenButton = true;
     Promise.all([
       this.$http.get(`/charge/saved-locations`),
       this.$http.get(`/charge/locations`),
@@ -112,6 +121,7 @@ export default Vue.extend({
         this.data.locations = [...locations.data] as LocationInterface[];
         this.data.chargers = [...chargers.data] as ChargerInterface[];
         this.data.connectors = [...connectors.data] as ConnectorInterface[];
+        this.disableOpenButton = false;
       },
       (err) => {
         this.$store.dispatch(NotificationActions.SET_NOTIFICATION, {

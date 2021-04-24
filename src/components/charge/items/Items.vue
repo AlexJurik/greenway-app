@@ -1,6 +1,8 @@
 <template>
   <div>
-    <h2 class="mr-2 mb-5 font-weight-medium">Select {{ title }}</h2>
+    <h2 class="mr-2 mb-5 font-weight-medium">
+      {{ $t("selectItem", { item: $t(`${title}`) }) }}
+    </h2>
     <Search
       v-if="workingItems"
       :target="workingItems"
@@ -23,7 +25,7 @@
           :key="index"
         ></v-radio>
       </v-radio-group>
-      <p class="step__fallback-text" v-else>No data</p>
+      <p class="step__fallback-text" v-else>{{ $t("noData") }}</p>
     </v-card-text>
     <v-divider></v-divider>
   </div>

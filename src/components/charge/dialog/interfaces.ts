@@ -9,6 +9,7 @@ export interface DialogDataInterface {
     stepComponent: StepComponentEnum;
     form: FormInterface;
     subtitle: string;
+    disableOpenButton: boolean;
 }
 
 export enum StepComponentEnum {

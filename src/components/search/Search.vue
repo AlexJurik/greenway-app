@@ -3,7 +3,7 @@
     v-model="q"
     @update="searchItems()"
     outlined
-    label="Search"
+    :label="$t('search')"
     prepend-inner-icon="mdi-magnify"
   ></v-text-field>
 </template>
