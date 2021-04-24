@@ -4,7 +4,6 @@
       :value="showSnack"
       :color="snackType"
       absolute
-      right
       rounded="pill"
       top
     >

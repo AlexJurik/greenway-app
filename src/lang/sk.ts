@@ -14,7 +14,7 @@ export default {
   connector: 'konektor',
   chargingStarted: 'Nabíjanie sa začalo',
   chargingStopped: 'Nabíjanie bolo ukončené',
-  doYouWantStart: 'Chcete začať nabíjať?',
+  doYouWantStart: 'Chcete začať nabíjanie?',
   pricingInfo: 'Informácie o cene',
   consumedEnergy: 'Poplatok za spotrebovanú energiu',
   chargingTimeFee: 'Poplatok po 180 minútach',
