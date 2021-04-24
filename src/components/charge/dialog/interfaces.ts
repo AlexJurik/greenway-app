@@ -8,6 +8,7 @@ export interface DialogDataInterface {
     step: number;
     stepComponent: StepComponentEnum;
     form: FormInterface;
+    subtitle: string;
 }
 
 export enum StepComponentEnum {

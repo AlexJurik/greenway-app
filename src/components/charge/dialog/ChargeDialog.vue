@@ -22,7 +22,7 @@
         </div>
 
         <div v-if="step !== 4" class="charge__subtitle">
-          <span>{{ makeSubtitle() }}</span>
+          <span>{{ subtitle }}</span>
         </div>
         <template v-if="step === 1 || step === 2 || step === 3">
           <Items
@@ -33,7 +33,7 @@
           />
         </template>
         <template v-else>
-          <Confirm @on-cancel="cancel()" />
+          <Confirm @on-cancel="hideDialog()" @start-charging="setCharging()" />
         </template>
 
         <v-card-actions v-if="step !== 4">
@@ -72,6 +72,8 @@ import { LocationInterface } from "@/lib/location";
 import { ChargerInterface } from "@/lib/charger";
 import { ConnectorInterface } from "@/lib/connector";
 import { FormInterface } from "../items/interfaces";
+import { RootActions } from "@/store/actions";
+import { NotificationActions } from "@/store/notification/actions";
 
 export default Vue.extend({
   name: "ChargeDialog",
@@ -89,6 +91,7 @@ export default Vue.extend({
         charger: undefined,
         connector: undefined,
       },
+      subtitle: "",
       dialog: false,
       filtered: false,
       step: 1,
@@ -101,25 +104,39 @@ export default Vue.extend({
       this.$http.get(`/charge/locations`),
       this.$http.get(`/charge/chargers`),
       this.$http.get(`/charge/connectors`),
-    ]).then(([saved_locations, locations, chargers, connectors]) => {
-      this.data.saved_locations = [
-        ...saved_locations.data,
-      ] as LocationInterface[];
-      this.data.locations = [...locations.data] as LocationInterface[];
-      this.data.chargers = [...chargers.data] as ChargerInterface[];
-      this.data.connectors = [...connectors.data] as ConnectorInterface[];
-    });
+    ]).then(
+      ([saved_locations, locations, chargers, connectors]) => {
+        this.data.saved_locations = [
+          ...saved_locations.data,
+        ] as LocationInterface[];
+        this.data.locations = [...locations.data] as LocationInterface[];
+        this.data.chargers = [...chargers.data] as ChargerInterface[];
+        this.data.connectors = [...connectors.data] as ConnectorInterface[];
+      },
+      (err) => {
+        this.$store.dispatch(NotificationActions.SET_NOTIFICATION, {
+          message: err.message,
+          type: "error",
+        });
+      }
+    );
   },
   methods: {
-    cancel() {
+    hideDialog() {
       this.dialog = false;
       this.resetStep();
     },
     resetStep() {
-      setTimeout(() => (this.step = 1), 300);
+      setTimeout(() => {
+        this.step = 1;
+        this.form.location = undefined;
+        this.form.charger = undefined;
+        this.form.connector = undefined;
+      }, 300);
     },
     setValues(form: FormInterface) {
       this.form = form;
+      this.makeSubtitle();
     },
     validateForm(step: number) {
       switch (step) {
@@ -142,7 +159,11 @@ export default Vue.extend({
         formArray.push(this.form.connector?.name);
       }
 
-      return formArray.join(" - ");
+      this.subtitle = formArray.join(" - ");
+    },
+    setCharging() {
+      this.$store.dispatch(RootActions.SET_CHARGING, true);
+      this.hideDialog();
     },
   },
   watch: {

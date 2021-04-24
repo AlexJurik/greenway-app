@@ -29,11 +29,23 @@
         >
           Cancel
         </v-btn>
-        <v-btn x-large color="success">Start charging</v-btn>
+        <v-btn x-large color="success" @click="start()">Start charging</v-btn>
       </v-layout>
     </v-card-actions>
   </div>
 </template>
+
+<script lang="ts">
+import Vue from "vue";
+export default Vue.extend({
+  name: "Confirm",
+  methods: {
+    start() {
+      this.$emit("start-charging");
+    },
+  },
+});
+</script>
 
 <style lang="scss">
 .confirm__text-muted {
