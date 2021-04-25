@@ -1,10 +1,10 @@
 export default {
-  start: 'Začat',
+  start: 'Začať',
   stop: 'Zastáviť',
   next: 'Ďalej',
   back: 'Späť',
   search: 'Hľadať',
-  startCharging: 'Začat nabijanie',
+  startCharging: 'Začať nabijanie',
   stopCharging: 'Zastáviť nabijanie',
   myLocations: 'Moje lokácie',
   noData: 'Žiadne dáta',
